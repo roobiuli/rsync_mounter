@@ -55,17 +55,20 @@ def rsync(source, target):
 def main(sourceip):
     ip = sourceip
     command = "showmount -e " + ip + " | grep -i reserved"
-    source = bash(command)[0].strip() # Take source dir
-
+    source = bash(command)[0].split() # Take source dir
+   
+    print source
     if bash(command)[2] == 0:
         print "Found NFS share"
         dirs = ["/tmp/newdest", "/tmp/mount"]
         for direc in dirs:
             create_dir(direc)
 
-        mounter_cmd = "mount -t nfs -o rw,nfsvers=3 " + ip + source + " {}".format(dirs[1])
+        mounter_cmd = "sudo mount -t nfs -o rw,nfsvers=3 " + ip + source[0] + " {}".format(dirs[1])
+        print "Passed the mount"
+        print mounter_cmd
         mounter = bash(mounter_cmd)[2]
-
+        print mounter
         if mounter == 0:
             print "Should start rsync but no !"
             #rsync(dirs[1], dirs[0])
